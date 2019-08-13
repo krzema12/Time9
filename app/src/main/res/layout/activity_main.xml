@@ -7,13 +7,80 @@
         android:layout_height="match_parent"
         tools:context=".MainActivity">
 
-    <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Hello World!"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent"/>
+    <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_constraintEnd_toEndOf="parent">
+        <TableLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
+            <TableRow android:layout_width="match_parent" android:layout_height="wrap_content">
+                <Button
+                    android:id="@+id/button_sprint_work"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="match_parent"
+                    android:text="@string/sprint_work" />
+                <Button
+                    android:id="@+id/button_code_review"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="match_parent"
+                    android:text="@string/code_review" />
+                <Button
+                    android:id="@+id/button_meeting"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="match_parent"
+                    android:text="@string/meeting" />
+            </TableRow>
+            <TableRow android:layout_width="match_parent" android:layout_height="wrap_content">
+                <Button
+                    android:id="@+id/button_adhoc_request"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="match_parent"
+                    android:text="@string/adhoc_request" />
+                <Button
+                    android:id="@+id/button_operational"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="match_parent"
+                    android:text="@string/operational" />
+                <Button
+                    android:id="@+id/button_design_project_management"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="match_parent"
+                    android:text="@string/design_project_management" />
+            </TableRow>
+            <TableRow android:layout_width="match_parent" android:layout_height="wrap_content">
+                <Button
+                    android:id="@+id/button_scrum_mastering"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="match_parent"
+                    android:text="@string/scrum_mastering" />
+                <Button
+                    android:id="@+id/button_recruiting"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="match_parent"
+                    android:text="@string/recruiting" />
+                <Button
+                    android:id="@+id/button_other"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="match_parent"
+                    android:text="@string/other" />
+            </TableRow>
+        </TableLayout>
+        <Button
+            android:id="@+id/button_off_work"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/off_work" />
+    </LinearLayout>
 </android.support.constraint.ConstraintLayout>
