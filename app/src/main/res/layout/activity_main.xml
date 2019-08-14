@@ -19,18 +19,21 @@
             <TableRow android:layout_width="match_parent" android:layout_height="wrap_content">
                 <Button
                     android:id="@+id/button_sprint_work"
+                    android:tag="work_item_type:sprint_work"
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:layout_height="match_parent"
                     android:text="@string/sprint_work" />
                 <Button
                     android:id="@+id/button_code_review"
+                    android:tag="work_item_type:code_review"
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:layout_height="match_parent"
                     android:text="@string/code_review" />
                 <Button
                     android:id="@+id/button_meeting"
+                    android:tag="work_item_type:meeting"
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:layout_height="match_parent"
@@ -39,18 +42,21 @@
             <TableRow android:layout_width="match_parent" android:layout_height="wrap_content">
                 <Button
                     android:id="@+id/button_adhoc_request"
+                    android:tag="work_item_type:adhoc_request"
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:layout_height="match_parent"
                     android:text="@string/adhoc_request" />
                 <Button
                     android:id="@+id/button_operational"
+                    android:tag="work_item_type:operational"
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:layout_height="match_parent"
                     android:text="@string/operational" />
                 <Button
                     android:id="@+id/button_design_project_management"
+                    android:tag="work_item_type:design_project_management"
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:layout_height="match_parent"
@@ -59,18 +65,21 @@
             <TableRow android:layout_width="match_parent" android:layout_height="wrap_content">
                 <Button
                     android:id="@+id/button_scrum_mastering"
+                    android:tag="work_item_type:scrum_mastering"
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:layout_height="match_parent"
                     android:text="@string/scrum_mastering" />
                 <Button
                     android:id="@+id/button_recruiting"
+                    android:tag="work_item_type:recruiting"
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:layout_height="match_parent"
                     android:text="@string/recruiting" />
                 <Button
                     android:id="@+id/button_other"
+                    android:tag="work_item_type:other"
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:layout_height="match_parent"
@@ -79,6 +88,7 @@
         </TableLayout>
         <Button
             android:id="@+id/button_off_work"
+            android:tag="work_item_type:off_work"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/off_work" />
