@@ -4,9 +4,16 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
+import it.krzeminski.time9.model.WorkItem
+import it.krzeminski.time9.storage.TSVWorkHistoryStorage
+import it.krzeminski.time9.storage.WorkHistoryStorage
 import kotlinx.android.synthetic.main.activity_main.*
+import java.time.Instant
 
 class MainActivity : AppCompatActivity(), View.OnClickListener {
+    private lateinit var workHistoryStorage: WorkHistoryStorage
+    private var workHistory: List<WorkItem> = emptyList()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -21,6 +28,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         button_recruiting.setOnClickListener(::onClick)
         button_other.setOnClickListener(::onClick)
         button_off_work.setOnClickListener(::onClick)
+
+        workHistoryStorage = TSVWorkHistoryStorage(filePath = filesDir.toPath().resolve("work_history.csv"))
     }
 
     override fun onClick(view: View?) {
@@ -28,9 +37,32 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             val button: Button = view
             val tag = button.tag
             getWorkItemFromTag(tag)?.let { workItemType ->
-                println("Button clicked, tag: $tag, workItemType: $workItemType")
+                onWorkItemChange(workItemType)
             }
         }
+    }
+
+    private fun onWorkItemChange(workItemType: String) {
+        println("Work item changed to $workItemType")
+
+        workHistory = addNewWorkItem(workHistory,
+            WorkItem(
+                type = workItemType,
+                startTime = Instant.now()))
+        println("Work history")
+        println(workHistory)
+        workHistoryStorage.store(workHistory)
+    }
+
+    private fun addNewWorkItem(workHistory: List<WorkItem>, newWorkItem: WorkItem): List<WorkItem> {
+        val modifiedHistory = if (workHistory.isNotEmpty()) {
+            val lastWorkItemWithReferenceToNewWorkItem = workHistory.last().copy(nextWorkItem = newWorkItem)
+            workHistory.dropLast(1) + lastWorkItemWithReferenceToNewWorkItem
+        } else {
+            emptyList()
+        }
+
+        return modifiedHistory + newWorkItem
     }
 
     private fun getWorkItemFromTag(tag: Any?): String? {
