@@ -45,24 +45,12 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     private fun onWorkItemChange(workItemType: String) {
         println("Work item changed to $workItemType")
 
-        workHistory = addNewWorkItem(workHistory,
-            WorkItem(
-                type = workItemType,
-                startTime = Instant.now()))
+        workHistory = workHistory + WorkItem(
+            type = workItemType,
+            startTime = Instant.now())
         println("Work history")
         println(workHistory)
         workHistoryStorage.store(workHistory)
-    }
-
-    private fun addNewWorkItem(workHistory: List<WorkItem>, newWorkItem: WorkItem): List<WorkItem> {
-        val modifiedHistory = if (workHistory.isNotEmpty()) {
-            val lastWorkItemWithReferenceToNewWorkItem = workHistory.last().copy(nextWorkItem = newWorkItem)
-            workHistory.dropLast(1) + lastWorkItemWithReferenceToNewWorkItem
-        } else {
-            emptyList()
-        }
-
-        return modifiedHistory + newWorkItem
     }
 
     private fun getWorkItemFromTag(tag: Any?): String? {

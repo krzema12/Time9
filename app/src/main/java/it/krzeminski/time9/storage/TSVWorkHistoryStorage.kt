@@ -12,31 +12,14 @@ class TSVWorkHistoryStorage(val filePath: Path) : WorkHistoryStorage() {
         println(filePath)
         with(FileWriter(filePath.toFile())) {
             appendln(listOf(
-                "id", // To be able to refer to some work item from another work item.
                 "type",
-                "startTime",
-                "nextWorkItemId",
-                "endTime" // For convenience when analyzing the data in e.g. a spreadsheet.
+                "startTime"
             ).joinToString("\t"))
 
-            workHistory.forEachIndexed { index, workItem ->
-                val nextWorkItemIndex = workItem.nextWorkItem?.let {
-                    workHistory.indexOfFirst {
-                        it.type == workItem.nextWorkItem.type
-                                && it.startTime == workItem.nextWorkItem.startTime
-                    }
-                }
-                val nextWorkItemIndexOrNull = if (nextWorkItemIndex != -1) {
-                    nextWorkItemIndex
-                } else {
-                    null
-                }
+            workHistory.forEach { workItem ->
                 appendln(listOf(
-                    index.toString(),
                     workItem.type,
-                    workItem.startTime.toSpreadsheetFriendlyFormat(),
-                    nextWorkItemIndexOrNull ?: "",
-                    workItem.nextWorkItem?.startTime?.toSpreadsheetFriendlyFormat() ?: ""
+                    workItem.startTime.toSpreadsheetFriendlyFormat()
                 ).joinToString("\t"))
             }
 
