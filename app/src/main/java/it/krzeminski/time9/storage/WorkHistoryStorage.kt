@@ -4,4 +4,5 @@ import it.krzeminski.time9.model.WorkItem
 
 abstract class WorkHistoryStorage {
     abstract fun store(workHistory: List<WorkItem>)
+    abstract fun load(): List<WorkItem>
 }

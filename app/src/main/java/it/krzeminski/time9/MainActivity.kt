@@ -30,6 +30,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         button_off_work.setOnClickListener(::onClick)
 
         workHistoryStorage = TSVWorkHistoryStorage(filePath = filesDir.toPath().resolve("work_history.csv"))
+        workHistory = workHistoryStorage.load()
+        println("Loaded:")
+        println(workHistory)
     }
 
     override fun onClick(view: View?) {
