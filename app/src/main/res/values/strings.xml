@@ -10,4 +10,5 @@
     <string name="scrum_mastering">Scrum-mastering</string>
     <string name="recruiting">Recruiting</string>
     <string name="other">Other</string>
+    <string name="history_not_loaded">(history not loaded)</string>
 </resources>

@@ -33,6 +33,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         workHistory = workHistoryStorage.load()
         println("Loaded:")
         println(workHistory)
+        number_of_history_entries.text = "Number of history entries: ${workHistory.size}"
     }
 
     override fun onClick(view: View?) {
@@ -53,6 +54,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             startTime = Instant.now())
         println("Work history")
         println(workHistory)
+        number_of_history_entries.text = "Number of history entries: ${workHistory.size}"
         workHistoryStorage.store(workHistory)
     }
 
