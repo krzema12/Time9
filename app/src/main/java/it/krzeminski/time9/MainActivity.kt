@@ -34,6 +34,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         println("Loaded:")
         println(workHistory)
         number_of_history_entries.text = "Number of history entries: ${workHistory.size}"
+        current_work_type.text = workHistory.lastOrNull()?.type?.split("_")?.joinToString(" ") ?: "(history empty)"
     }
 
     override fun onClick(view: View?) {
@@ -55,6 +56,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         println("Work history")
         println(workHistory)
         number_of_history_entries.text = "Number of history entries: ${workHistory.size}"
+        current_work_type.text = workItemType.split("_").joinToString(" ")
         workHistoryStorage.store(workHistory)
     }
 
