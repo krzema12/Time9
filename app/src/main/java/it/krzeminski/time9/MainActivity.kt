@@ -29,7 +29,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         button_other.setOnClickListener(::onClick)
         button_off_work.setOnClickListener(::onClick)
 
-        workHistoryStorage = TSVWorkHistoryStorage(filePath = filesDir.toPath().resolve("work_history.csv"))
+        workHistoryStorage = TSVWorkHistoryStorage(filePath = filesDir.toPath().resolve("work_history.tsv"))
         workHistory = workHistoryStorage.load()
         println("Loaded:")
         println(workHistory)
