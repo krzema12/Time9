@@ -9,8 +9,15 @@ import it.krzeminski.time9.storage.TSVWorkHistoryStorage
 import it.krzeminski.time9.storage.WorkHistoryStorage
 import kotlinx.android.synthetic.main.activity_main.*
 import java.time.Instant
+import android.view.Menu
+import android.content.Intent
+import android.support.v4.content.FileProvider
+import android.view.MenuItem
+import java.nio.file.Path
+
 
 class MainActivity : AppCompatActivity(), View.OnClickListener {
+    private lateinit var workHistoryFilePath: Path
     private lateinit var workHistoryStorage: WorkHistoryStorage
     private var workHistory: List<WorkItem> = emptyList()
 
@@ -29,12 +36,37 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         button_other.setOnClickListener(::onClick)
         button_off_work.setOnClickListener(::onClick)
 
-        workHistoryStorage = TSVWorkHistoryStorage(filePath = filesDir.toPath().resolve("work_history.tsv"))
+        workHistoryFilePath = filesDir.toPath().resolve("work_history.tsv")
+        workHistoryStorage = TSVWorkHistoryStorage(filePath = workHistoryFilePath)
         workHistory = workHistoryStorage.load()
         println("Loaded:")
         println(workHistory)
         number_of_history_entries.text = "Number of history entries: ${workHistory.size}"
         current_work_type.text = workHistory.lastOrNull()?.type?.split("_")?.joinToString(" ") ?: "(history empty)"
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.main, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.action_export_work_history -> {
+                println("Export")
+                val sendIntent = with(Intent(Intent.ACTION_SEND)) {
+                    type = "text/tab-separated-values"
+                    flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
+                    val workHistoryFile = workHistoryFilePath.toFile()
+                    val workHistoryFileUri = FileProvider.getUriForFile(
+                        applicationContext, "${applicationContext.packageName}.fileprovider", workHistoryFile)
+                    putExtra(Intent.EXTRA_STREAM, workHistoryFileUri)
+                }
+                startActivity(Intent.createChooser(sendIntent, "Export work history"))
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
     }
 
     override fun onClick(view: View?) {

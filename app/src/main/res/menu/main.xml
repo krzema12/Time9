@@ -1,0 +1,9 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/action_export_work_history"
+        android:title="@string/export_work_history"
+        app:showAsAction="always"/>
+
+</menu>
