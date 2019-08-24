@@ -1,15 +1,6 @@
 <resources>
     <string name="app_name">Time9</string>
-    <string name="meeting">Meeting</string>
-    <string name="code_review">Code Review</string>
-    <string name="sprint_work">Sprint Work</string>
     <string name="off_work">Off Work</string>
-    <string name="adhoc_request">Ad-hoc Request</string>
-    <string name="operational">Operational</string>
-    <string name="design_project_management">Design/project management</string>
-    <string name="scrum_mastering">Scrum-mastering</string>
-    <string name="recruiting">Recruiting</string>
-    <string name="other">Other</string>
     <string name="history_not_loaded">(history not loaded)</string>
     <string name="current_work_type">Current work type:</string>
     <string name="export_work_history">Export work history</string>
