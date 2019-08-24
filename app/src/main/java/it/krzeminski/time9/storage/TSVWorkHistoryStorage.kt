@@ -1,6 +1,7 @@
 package it.krzeminski.time9.storage
 
 import it.krzeminski.time9.model.WorkItem
+import it.krzeminski.time9.model.WorkType
 import java.io.FileReader
 import java.io.FileWriter
 import java.nio.file.Path
@@ -19,7 +20,7 @@ class TSVWorkHistoryStorage(val filePath: Path) : WorkHistoryStorage() {
 
             workHistory.forEach { workItem ->
                 appendln(listOf(
-                    workItem.type,
+                    workItem.type.name,
                     workItem.startTime.toSpreadsheetFriendlyFormat()
                 ).joinToString("\t"))
             }
@@ -41,7 +42,7 @@ class TSVWorkHistoryStorage(val filePath: Path) : WorkHistoryStorage() {
         return tsvData.map { line ->
             val fields = line.split("\t")
             WorkItem(
-                type = fields[0],
+                type = WorkType(name = fields[0]),
                 startTime = fields[1].fromSpreadsheetFriendlyFormatToInstant())
         }
     }

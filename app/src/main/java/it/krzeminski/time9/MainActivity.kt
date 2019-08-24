@@ -2,8 +2,6 @@ package it.krzeminski.time9
 
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.view.View
-import android.widget.Button
 import it.krzeminski.time9.model.WorkItem
 import it.krzeminski.time9.storage.TSVWorkHistoryStorage
 import it.krzeminski.time9.storage.WorkHistoryStorage
@@ -13,28 +11,36 @@ import android.view.Menu
 import android.content.Intent
 import android.support.v4.content.FileProvider
 import android.view.MenuItem
+import android.widget.Button
+import it.krzeminski.time9.model.WorkType
 import java.nio.file.Path
 
 
-class MainActivity : AppCompatActivity(), View.OnClickListener {
+class MainActivity : AppCompatActivity() {
+    private lateinit var changeWorkTypeButtonIds: List<Button>
     private lateinit var workHistoryFilePath: Path
     private lateinit var workHistoryStorage: WorkHistoryStorage
     private var workHistory: List<WorkItem> = emptyList()
+
+
+    private val workTypes = listOf(
+        "Sprint Work",
+        "Code Review",
+        "Meeting",
+        "Ad-hoc Request",
+        "Operational",
+        "Design/project management",
+        "Scrum-mastering",
+        "Recruiting",
+        "Other"
+    ).map { WorkType(name = it) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        button_sprint_work.setOnClickListener(::onClick)
-        button_code_review.setOnClickListener(::onClick)
-        button_meeting.setOnClickListener(::onClick)
-        button_adhoc_request.setOnClickListener(::onClick)
-        button_operational.setOnClickListener(::onClick)
-        button_design_project_management.setOnClickListener(::onClick)
-        button_scrum_mastering.setOnClickListener(::onClick)
-        button_recruiting.setOnClickListener(::onClick)
-        button_other.setOnClickListener(::onClick)
-        button_off_work.setOnClickListener(::onClick)
+
+        configureButtons()
 
         workHistoryFilePath = filesDir.toPath().resolve("work_history.tsv")
         workHistoryStorage = TSVWorkHistoryStorage(filePath = workHistoryFilePath)
@@ -42,7 +48,34 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         println("Loaded:")
         println(workHistory)
         number_of_history_entries.text = "Number of history entries: ${workHistory.size}"
-        current_work_type.text = workHistory.lastOrNull()?.type?.split("_")?.joinToString(" ") ?: "(history empty)"
+        current_work_type.text = workHistory.lastOrNull()?.type?.name ?: "(history empty)"
+    }
+
+    private fun configureButtons() {
+        changeWorkTypeButtonIds = listOf(
+            button_change_work_type_1,
+            button_change_work_type_2,
+            button_change_work_type_3,
+            button_change_work_type_4,
+            button_change_work_type_5,
+            button_change_work_type_6,
+            button_change_work_type_7,
+            button_change_work_type_8,
+            button_change_work_type_9)
+
+        (workTypes zip changeWorkTypeButtonIds).forEach { (workType, button) ->
+            with(button) {
+                text = workType.name
+                isEnabled = true
+                setOnClickListener {
+                    onWorkItemChange(workType)
+                }
+            }
+        }
+
+        button_off_work.setOnClickListener {
+            onWorkItemChange(WorkType(name = "Off Work"))
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -69,37 +102,16 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         }
     }
 
-    override fun onClick(view: View?) {
-        if (view is Button) {
-            val button: Button = view
-            val tag = button.tag
-            getWorkItemFromTag(tag)?.let { workItemType ->
-                onWorkItemChange(workItemType)
-            }
-        }
-    }
-
-    private fun onWorkItemChange(workItemType: String) {
-        println("Work item changed to $workItemType")
+    private fun onWorkItemChange(workType: WorkType) {
+        println("Work item changed to $workType")
 
         workHistory = workHistory + WorkItem(
-            type = workItemType,
+            type = workType,
             startTime = Instant.now())
         println("Work history")
         println(workHistory)
         number_of_history_entries.text = "Number of history entries: ${workHistory.size}"
-        current_work_type.text = workItemType
+        current_work_type.text = workType.name
         workHistoryStorage.store(workHistory)
-    }
-
-    private fun getWorkItemFromTag(tag: Any?): String? {
-        val tagAsString = tag as String? ?: return null
-        val tagParts = tagAsString.split(":")
-
-        return if (tagParts.size == 2 && tagParts[0] == "work_item_type") {
-            tagParts[1]
-        } else {
-            null
-        }
     }
 }
