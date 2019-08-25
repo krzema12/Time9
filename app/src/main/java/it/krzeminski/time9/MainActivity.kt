@@ -88,7 +88,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         println("Work history")
         println(workHistory)
         number_of_history_entries.text = "Number of history entries: ${workHistory.size}"
-        current_work_type.text = workItemType.split("_").joinToString(" ")
+        current_work_type.text = workItemType
         workHistoryStorage.store(workHistory)
     }
 
