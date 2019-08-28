@@ -4,4 +4,5 @@
     <string name="history_not_loaded">(history not loaded)</string>
     <string name="current_work_type">Current work type:</string>
     <string name="export_work_history">Export work history</string>
+    <string name="preferences">Preferences</string>
 </resources>

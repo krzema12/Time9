@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory
+        android:title="Customize work types">
+
+        <EditTextPreference
+            android:defaultValue="Please"
+            android:key="work_type_slot_1"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:title="Work type slot 1" />
+
+        <EditTextPreference
+            android:defaultValue="change"
+            android:key="work_type_slot_2"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:title="Work type slot 2" />
+
+        <EditTextPreference
+            android:defaultValue="work"
+            android:key="work_type_slot_3"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:title="Work type slot 3" />
+
+        <EditTextPreference
+            android:defaultValue="types"
+            android:key="work_type_slot_4"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:title="Work type slot 4" />
+
+        <EditTextPreference
+            android:defaultValue="in"
+            android:key="work_type_slot_5"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:title="Work type slot 5" />
+
+        <EditTextPreference
+            android:defaultValue="preferences"
+            android:key="work_type_slot_6"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:title="Work type slot 6" />
+
+        <EditTextPreference
+            android:defaultValue="One"
+            android:key="work_type_slot_7"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:title="Work type slot 7" />
+
+        <EditTextPreference
+            android:defaultValue="Two"
+            android:key="work_type_slot_8"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:title="Work type slot 8" />
+
+        <EditTextPreference
+            android:defaultValue="Three"
+            android:key="work_type_slot_9"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:title="Work type slot 9" />
+
+    </PreferenceCategory>
+</PreferenceScreen>

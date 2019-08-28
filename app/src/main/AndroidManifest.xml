@@ -16,6 +16,9 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+        <activity
+            android:name=".preferences.MyPreferenceActivity"
+            android:label="Preferences" />
 
         <provider
             android:name="android.support.v4.content.FileProvider"

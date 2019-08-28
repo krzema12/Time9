@@ -13,8 +13,10 @@ import android.support.v4.content.FileProvider
 import android.view.MenuItem
 import android.widget.Button
 import it.krzeminski.time9.model.WorkType
+import it.krzeminski.time9.preferences.MyPreferenceActivity
 import java.nio.file.Path
-
+import android.preference.PreferenceManager
+import android.content.SharedPreferences
 
 class MainActivity : AppCompatActivity() {
     private lateinit var changeWorkTypeButtonIds: List<Button>
@@ -22,23 +24,16 @@ class MainActivity : AppCompatActivity() {
     private lateinit var workHistoryStorage: WorkHistoryStorage
     private var workHistory: List<WorkItem> = emptyList()
 
-
-    private val workTypes = listOf(
-        "Sprint Work",
-        "Code Review",
-        "Meeting",
-        "Ad-hoc Request",
-        "Operational",
-        "Design/project management",
-        "Scrum-mastering",
-        "Recruiting",
-        "Other"
-    ).map { WorkType(name = it) }
+    private var workTypes: List<WorkType> = listOf()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        val prefs = PreferenceManager.getDefaultSharedPreferences(this)
+        workTypes = (1..9)
+            .map { prefs.getString("work_type_slot_$it", null) }
+            .map { WorkType(it) }
 
         configureButtons()
 
@@ -96,6 +91,10 @@ class MainActivity : AppCompatActivity() {
                     putExtra(Intent.EXTRA_STREAM, workHistoryFileUri)
                 }
                 startActivity(Intent.createChooser(sendIntent, "Export work history"))
+                true
+            }
+            R.id.action_preferences -> {
+                startActivity(Intent(this, MyPreferenceActivity::class.java))
                 true
             }
             else -> super.onOptionsItemSelected(item)
