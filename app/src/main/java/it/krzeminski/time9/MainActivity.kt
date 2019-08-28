@@ -30,6 +30,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        PreferenceManager.setDefaultValues(this, R.xml.preferences, false)
         val prefs = PreferenceManager.getDefaultSharedPreferences(this)
         workTypes = (1..9)
             .map { prefs.getString("work_type_slot_$it", null) }
