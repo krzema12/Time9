@@ -1,7 +1,8 @@
 package it.krzeminski.time9.model
 
-import java.time.Instant
+import com.soywiz.klock.DateTime
 
 data class WorkItem(
     val type: WorkType,
-    val startTime: Instant)
+    val startTime: DateTime
+)

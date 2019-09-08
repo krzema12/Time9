@@ -1,18 +1,20 @@
 package it.krzeminski.time9.storage
 
+import com.soywiz.klock.DateFormat
+import com.soywiz.klock.DateTime
 import it.krzeminski.time9.model.WorkItem
 import it.krzeminski.time9.model.WorkType
+import java.io.File
 import java.io.FileReader
 import java.io.FileWriter
-import java.nio.file.Path
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
-class TSVWorkHistoryStorage(val filePath: Path) : WorkHistoryStorage() {
+class TSVWorkHistoryStorage(val filePath: String) : WorkHistoryStorage() {
     override fun store(workHistory: List<WorkItem>) {
         println(filePath)
-        with(FileWriter(filePath.toFile())) {
+        with(FileWriter(filePath)) {
             appendln(listOf(
                 "type",
                 "startTime"
@@ -31,11 +33,11 @@ class TSVWorkHistoryStorage(val filePath: Path) : WorkHistoryStorage() {
     }
 
     override fun load(): List<WorkItem> {
-        if (!filePath.toFile().exists()) {
+        if (!File(filePath).exists()) {
             return emptyList()
         }
 
-        val tsvData = with(FileReader(filePath.toFile())) {
+        val tsvData = with(FileReader(filePath)) {
             readLines().drop(1) // Header.
         }
 
@@ -48,11 +50,12 @@ class TSVWorkHistoryStorage(val filePath: Path) : WorkHistoryStorage() {
     }
 }
 
-private val dateTimeSpreadsheetFriendlyFormatter =
-    DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").withZone(ZoneId.systemDefault())
+private val dateTimeSpreadsheetFriendlyFormat =
+    DateFormat("yyyy-MM-dd HH:mm:ss")
 
-private fun Instant.toSpreadsheetFriendlyFormat() =
-    dateTimeSpreadsheetFriendlyFormatter.format(this)
+private fun DateTime.toSpreadsheetFriendlyFormat() =
+    this.format(dateTimeSpreadsheetFriendlyFormat)
 
 private fun String.fromSpreadsheetFriendlyFormatToInstant() =
-    Instant.from(dateTimeSpreadsheetFriendlyFormatter.parse(this))
+    dateTimeSpreadsheetFriendlyFormat.tryParse(this)?.local
+        ?: throw IllegalArgumentException("The time format $this couldn't be parsed!")

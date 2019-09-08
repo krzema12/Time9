@@ -6,7 +6,6 @@ import it.krzeminski.time9.model.WorkItem
 import it.krzeminski.time9.storage.TSVWorkHistoryStorage
 import it.krzeminski.time9.storage.WorkHistoryStorage
 import kotlinx.android.synthetic.main.activity_main.*
-import java.time.Instant
 import android.view.Menu
 import android.content.Intent
 import android.support.v4.content.FileProvider
@@ -14,13 +13,13 @@ import android.view.MenuItem
 import android.widget.Button
 import it.krzeminski.time9.model.WorkType
 import it.krzeminski.time9.preferences.MyPreferenceActivity
-import java.nio.file.Path
 import android.preference.PreferenceManager
-import android.content.SharedPreferences
+import com.soywiz.klock.DateTime
+import java.io.File
 
 class MainActivity : AppCompatActivity() {
     private lateinit var changeWorkTypeButtonIds: List<Button>
-    private lateinit var workHistoryFilePath: Path
+    private lateinit var workHistoryFile: File
     private lateinit var workHistoryStorage: WorkHistoryStorage
     private var workHistory: List<WorkItem> = emptyList()
 
@@ -38,8 +37,8 @@ class MainActivity : AppCompatActivity() {
 
         configureButtons()
 
-        workHistoryFilePath = filesDir.toPath().resolve("work_history.tsv")
-        workHistoryStorage = TSVWorkHistoryStorage(filePath = workHistoryFilePath)
+        workHistoryFile = filesDir.resolve("work_history.tsv")
+        workHistoryStorage = TSVWorkHistoryStorage(filePath = workHistoryFile.toString())
         workHistory = workHistoryStorage.load()
         println("Loaded:")
         println(workHistory)
@@ -86,7 +85,6 @@ class MainActivity : AppCompatActivity() {
                 val sendIntent = with(Intent(Intent.ACTION_SEND)) {
                     type = "text/tab-separated-values"
                     flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
-                    val workHistoryFile = workHistoryFilePath.toFile()
                     val workHistoryFileUri = FileProvider.getUriForFile(
                         applicationContext, "${applicationContext.packageName}.fileprovider", workHistoryFile)
                     putExtra(Intent.EXTRA_STREAM, workHistoryFileUri)
@@ -107,7 +105,7 @@ class MainActivity : AppCompatActivity() {
 
         workHistory = workHistory + WorkItem(
             type = workType,
-            startTime = Instant.now())
+            startTime = DateTime.now())
         println("Work history")
         println(workHistory)
         number_of_history_entries.text = "Number of history entries: ${workHistory.size}"
