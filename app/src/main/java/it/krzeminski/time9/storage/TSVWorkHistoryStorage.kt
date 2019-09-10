@@ -1,7 +1,7 @@
 package it.krzeminski.time9.storage
 
 import com.soywiz.klock.DateFormat
-import com.soywiz.klock.DateTime
+import com.soywiz.klock.DateTimeTz
 import it.krzeminski.time9.model.WorkItem
 import it.krzeminski.time9.model.WorkType
 import java.io.File
@@ -45,7 +45,7 @@ class TSVWorkHistoryStorage(val filePath: String) : WorkHistoryStorage() {
             val fields = line.split("\t")
             WorkItem(
                 type = WorkType(name = fields[0]),
-                startTime = fields[1].fromSpreadsheetFriendlyFormatToInstant())
+                startTime = fields[1].fromSpreadsheetFriendlyFormatToDateTimeTz())
         }
     }
 }
@@ -53,9 +53,9 @@ class TSVWorkHistoryStorage(val filePath: String) : WorkHistoryStorage() {
 private val dateTimeSpreadsheetFriendlyFormat =
     DateFormat("yyyy-MM-dd HH:mm:ss")
 
-private fun DateTime.toSpreadsheetFriendlyFormat() =
+private fun DateTimeTz.toSpreadsheetFriendlyFormat() =
     this.format(dateTimeSpreadsheetFriendlyFormat)
 
-private fun String.fromSpreadsheetFriendlyFormatToInstant() =
-    dateTimeSpreadsheetFriendlyFormat.tryParse(this)?.local
+private fun String.fromSpreadsheetFriendlyFormatToDateTimeTz() =
+    dateTimeSpreadsheetFriendlyFormat.tryParse(this)
         ?: throw IllegalArgumentException("The time format $this couldn't be parsed!")

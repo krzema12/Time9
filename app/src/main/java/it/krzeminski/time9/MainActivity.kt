@@ -105,7 +105,7 @@ class MainActivity : AppCompatActivity() {
 
         workHistory = workHistory + WorkItem(
             type = workType,
-            startTime = DateTime.now())
+            startTime = DateTime.now().local)
         println("Work history")
         println(workHistory)
         number_of_history_entries.text = "Number of history entries: ${workHistory.size}"
