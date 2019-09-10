@@ -10,7 +10,6 @@ import java.io.FileWriter
 
 class TSVWorkHistoryStorage(val filePath: String) : WorkHistoryStorage() {
     override fun store(workHistory: List<WorkItem>) {
-        println(filePath)
         with(FileWriter(filePath)) {
             appendln(listOf(
                 "type",

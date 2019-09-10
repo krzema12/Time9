@@ -40,8 +40,7 @@ class MainActivity : AppCompatActivity() {
         workHistoryFile = filesDir.resolve("work_history.tsv")
         workHistoryStorage = TSVWorkHistoryStorage(filePath = workHistoryFile.toString())
         workHistory = workHistoryStorage.load()
-        println("Loaded:")
-        println(workHistory)
+
         number_of_history_entries.text = "Number of history entries: ${workHistory.size}"
         current_work_type.text = workHistory.lastOrNull()?.type?.name ?: "(history empty)"
     }
@@ -81,7 +80,6 @@ class MainActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.action_export_work_history -> {
-                println("Export")
                 val sendIntent = with(Intent(Intent.ACTION_SEND)) {
                     type = "text/tab-separated-values"
                     flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
@@ -101,13 +99,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun onWorkItemChange(workType: WorkType) {
-        println("Work item changed to $workType")
-
         workHistory = workHistory + WorkItem(
             type = workType,
             startTime = DateTime.now().local)
-        println("Work history")
-        println(workHistory)
+
         number_of_history_entries.text = "Number of history entries: ${workHistory.size}"
         current_work_type.text = workType.name
         workHistoryStorage.store(workHistory)
