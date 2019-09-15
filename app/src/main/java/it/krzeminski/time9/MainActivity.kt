@@ -30,6 +30,14 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false)
+
+        workHistoryFile = filesDir.resolve("work_history.tsv")
+        workHistoryStorage = TSVWorkHistoryStorage(filePath = workHistoryFile.toString())
+    }
+
+    override fun onResume() {
+        super.onResume()
+
         val prefs = PreferenceManager.getDefaultSharedPreferences(this)
         workTypes = (1..9)
             .map { prefs.getString("work_type_slot_$it", null) }
@@ -37,8 +45,6 @@ class MainActivity : AppCompatActivity() {
 
         configureButtons()
 
-        workHistoryFile = filesDir.resolve("work_history.tsv")
-        workHistoryStorage = TSVWorkHistoryStorage(filePath = workHistoryFile.toString())
         workHistory = workHistoryStorage.load()
 
         number_of_history_entries.text = "Number of history entries: ${workHistory.size}"
