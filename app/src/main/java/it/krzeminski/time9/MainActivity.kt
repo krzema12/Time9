@@ -1,6 +1,6 @@
 package it.krzeminski.time9
 
-import android.support.v7.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import it.krzeminski.time9.model.WorkItem
 import it.krzeminski.time9.storage.TSVWorkHistoryStorage
@@ -8,7 +8,7 @@ import it.krzeminski.time9.storage.WorkHistoryStorage
 import kotlinx.android.synthetic.main.activity_main.*
 import android.view.Menu
 import android.content.Intent
-import android.support.v4.content.FileProvider
+import androidx.core.content.FileProvider
 import android.view.MenuItem
 import android.widget.Button
 import it.krzeminski.time9.model.WorkType
