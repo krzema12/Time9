@@ -2,26 +2,23 @@ package it.krzeminski.time9
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import it.krzeminski.time9.model.WorkItem
 import it.krzeminski.time9.storage.TSVWorkHistoryStorage
-import it.krzeminski.time9.storage.WorkHistoryStorage
 import kotlinx.android.synthetic.main.activity_main.*
 import android.view.Menu
 import android.content.Intent
 import androidx.core.content.FileProvider
 import android.view.MenuItem
-import android.widget.Button
 import it.krzeminski.time9.model.WorkType
 import it.krzeminski.time9.preferences.MyPreferenceActivity
 import android.preference.PreferenceManager
-import com.soywiz.klock.DateTime
+import androidx.lifecycle.Observer
+import com.soywiz.klock.TimeProvider
+import it.krzeminski.time9.viewmodel.WorkTrackingViewModel
 import java.io.File
 
 class MainActivity : AppCompatActivity() {
-    private lateinit var changeWorkTypeButtonIds: List<Button>
+    private lateinit var workTrackingViewModel: WorkTrackingViewModel
     private lateinit var workHistoryFile: File
-    private lateinit var workHistoryStorage: WorkHistoryStorage
-    private var workHistory: List<WorkItem> = emptyList()
 
     private var workTypes: List<WorkType> = listOf()
 
@@ -32,7 +29,23 @@ class MainActivity : AppCompatActivity() {
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false)
 
         workHistoryFile = filesDir.resolve("work_history.tsv")
-        workHistoryStorage = TSVWorkHistoryStorage(filePath = workHistoryFile.toString())
+        val workHistoryStorage = TSVWorkHistoryStorage(filePath = workHistoryFile.toString())
+        val workTrackingViewModelFactory = WorkTrackingViewModel.Factory(workHistoryStorage, TimeProvider)
+
+        workTrackingViewModel = workTrackingViewModelFactory.create(
+            WorkTrackingViewModel::class.java)
+
+        val thisActivity = this
+        with(workTrackingViewModel) {
+            currentWorkType.observe(thisActivity, Observer { workType ->
+                current_work_type.text = workType.name
+            })
+            numberOfWorkHistoryEntries.observe(thisActivity, Observer { numberOfEntries ->
+                number_of_history_entries.text = "Number of history entries: $numberOfEntries"
+            })
+        }
+
+        workTrackingViewModel.initializeHistory()
     }
 
     override fun onResume() {
@@ -43,16 +56,11 @@ class MainActivity : AppCompatActivity() {
             .map { prefs.getString("work_type_slot_$it", null) }
             .map { WorkType(it) }
 
-        configureButtons()
-
-        workHistory = workHistoryStorage.load()
-
-        number_of_history_entries.text = "Number of history entries: ${workHistory.size}"
-        current_work_type.text = workHistory.lastOrNull()?.type?.name ?: "(history empty)"
+        configureButtons(workTrackingViewModel)
     }
 
-    private fun configureButtons() {
-        changeWorkTypeButtonIds = listOf(
+    private fun configureButtons(workTrackingViewModel: WorkTrackingViewModel) {
+        val changeWorkTypeButtonIds = listOf(
             button_change_work_type_1,
             button_change_work_type_2,
             button_change_work_type_3,
@@ -68,13 +76,13 @@ class MainActivity : AppCompatActivity() {
                 text = workType.name
                 isEnabled = true
                 setOnClickListener {
-                    onWorkItemChange(workType)
+                    workTrackingViewModel.changeCurrentWorkType(workType)
                 }
             }
         }
 
         button_off_work.setOnClickListener {
-            onWorkItemChange(WorkType(name = "Off Work"))
+            workTrackingViewModel.changeToOffWork()
         }
     }
 
@@ -102,15 +110,5 @@ class MainActivity : AppCompatActivity() {
             }
             else -> super.onOptionsItemSelected(item)
         }
-    }
-
-    private fun onWorkItemChange(workType: WorkType) {
-        workHistory = workHistory + WorkItem(
-            type = workType,
-            startTime = DateTime.now().local)
-
-        number_of_history_entries.text = "Number of history entries: ${workHistory.size}"
-        current_work_type.text = workType.name
-        workHistoryStorage.store(workHistory)
     }
 }
