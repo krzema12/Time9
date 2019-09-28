@@ -22,6 +22,10 @@ class WorkTrackingViewModel(private val workHistoryStorage: WorkHistoryStorage,
     }
 
     fun changeCurrentWorkType(newWorkType: WorkType) {
+        if (newWorkType == currentWorkType.value) {
+            return
+        }
+
         workHistory.value = workHistory.value!! + WorkItem(
             type = newWorkType,
             startTime = timeProvider.now().local)

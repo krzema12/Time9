@@ -125,7 +125,6 @@ class WorkTrackingViewModelTest : StringSpec({
         }
     }
 
-    // TODO it should not add a new item, see #6
     "changeCurrentWorkType to the same value as last history item" {
         // given
         val workHistoryStorage = mockk<WorkHistoryStorage>()
@@ -144,15 +143,10 @@ class WorkTrackingViewModelTest : StringSpec({
         workTrackingViewModel.changeCurrentWorkType(WorkType("LastHistoryItem"))
 
         // then
-        workTrackingViewModel.numberOfWorkHistoryEntries.value shouldBe 3
+        workTrackingViewModel.numberOfWorkHistoryEntries.value shouldBe 2
         workTrackingViewModel.currentWorkType.value shouldBe WorkType("LastHistoryItem")
         verifyAll {
             workHistoryStorage.load()
-            workHistoryStorage.store(listOf(
-                WorkItem(type = WorkType("first"), startTime = DateTimeTz.fromUnixLocal(1)),
-                WorkItem(type = WorkType("LastHistoryItem"), startTime = DateTimeTz.fromUnixLocal(2)),
-                WorkItem(type = WorkType("LastHistoryItem"), startTime = DateTime.fromUnix(123).local)))
-            timeProvider.now()
         }
     }
 
