@@ -1,5 +1,6 @@
 package it.krzeminski.time9.viewmodel
 
+import android.content.SharedPreferences
 import com.soywiz.klock.DateTime
 import com.soywiz.klock.DateTimeTz
 import com.soywiz.klock.TimeProvider
@@ -177,6 +178,46 @@ class WorkTrackingViewModelTest : StringSpec({
                 WorkItem(type = WorkType("second"), startTime = DateTimeTz.fromUnixLocal(2)),
                 WorkItem(type = WorkType("Off Work"), startTime = DateTime.fromUnix(123).local)))
             timeProvider.now()
+        }
+    }
+
+    "loads work types from preferences" {
+        // given
+        val workHistoryStorage = mockk<WorkHistoryStorage>()
+        val timeProvider = mockk<TimeProvider>()
+        val sharedPreferences = mockk<SharedPreferences>()
+        val workTrackingViewModel = WorkTrackingViewModel(workHistoryStorage, timeProvider)
+        cookArchitectureComponents()
+        val preferenceKeySlot = slot<String>()
+        every { sharedPreferences.getString(capture(preferenceKeySlot), any()) } answers {
+            "Some preference value for ${preferenceKeySlot.captured}" }
+        every { sharedPreferences.registerOnSharedPreferenceChangeListener(any()) } just runs
+
+        // when
+        workTrackingViewModel.initializeWorkTypes(sharedPreferences)
+
+        // then
+        workTrackingViewModel.workTypes.value shouldBe listOf(
+            WorkType("Some preference value for work_type_slot_1"),
+            WorkType("Some preference value for work_type_slot_2"),
+            WorkType("Some preference value for work_type_slot_3"),
+            WorkType("Some preference value for work_type_slot_4"),
+            WorkType("Some preference value for work_type_slot_5"),
+            WorkType("Some preference value for work_type_slot_6"),
+            WorkType("Some preference value for work_type_slot_7"),
+            WorkType("Some preference value for work_type_slot_8"),
+            WorkType("Some preference value for work_type_slot_9"))
+        verifyAll {
+            sharedPreferences.getString("work_type_slot_1", null)
+            sharedPreferences.getString("work_type_slot_2", null)
+            sharedPreferences.getString("work_type_slot_3", null)
+            sharedPreferences.getString("work_type_slot_4", null)
+            sharedPreferences.getString("work_type_slot_5", null)
+            sharedPreferences.getString("work_type_slot_6", null)
+            sharedPreferences.getString("work_type_slot_7", null)
+            sharedPreferences.getString("work_type_slot_8", null)
+            sharedPreferences.getString("work_type_slot_9", null)
+            sharedPreferences.registerOnSharedPreferenceChangeListener(any())
         }
     }
 })

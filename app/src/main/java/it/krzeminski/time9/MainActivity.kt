@@ -6,6 +6,7 @@ import it.krzeminski.time9.storage.TSVWorkHistoryStorage
 import kotlinx.android.synthetic.main.activity_main.*
 import android.view.Menu
 import android.content.Intent
+import android.content.SharedPreferences
 import androidx.core.content.FileProvider
 import android.view.MenuItem
 import it.krzeminski.time9.model.WorkType
@@ -19,8 +20,6 @@ import java.io.File
 class MainActivity : AppCompatActivity() {
     private lateinit var workTrackingViewModel: WorkTrackingViewModel
     private lateinit var workHistoryFile: File
-
-    private var workTypes: List<WorkType> = listOf()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,23 +42,16 @@ class MainActivity : AppCompatActivity() {
             numberOfWorkHistoryEntries.observe(thisActivity, Observer { numberOfEntries ->
                 number_of_history_entries.text = "Number of history entries: $numberOfEntries"
             })
+            workTypes.observe(thisActivity, Observer { workTypes ->
+                configureButtons(workTypes, this)
+            })
         }
 
         workTrackingViewModel.initializeHistory()
+        workTrackingViewModel.initializeWorkTypes(PreferenceManager.getDefaultSharedPreferences(this))
     }
 
-    override fun onResume() {
-        super.onResume()
-
-        val prefs = PreferenceManager.getDefaultSharedPreferences(this)
-        workTypes = (1..9)
-            .map { prefs.getString("work_type_slot_$it", null) }
-            .map { WorkType(it) }
-
-        configureButtons(workTrackingViewModel)
-    }
-
-    private fun configureButtons(workTrackingViewModel: WorkTrackingViewModel) {
+    private fun configureButtons(workTypes: List<WorkType>, workTrackingViewModel: WorkTrackingViewModel) {
         val changeWorkTypeButtonIds = listOf(
             button_change_work_type_1,
             button_change_work_type_2,
