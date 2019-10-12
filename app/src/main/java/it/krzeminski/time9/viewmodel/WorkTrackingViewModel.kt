@@ -57,8 +57,8 @@ class WorkTrackingViewModel(private val workHistoryStorage: WorkHistoryStorage,
 
     private fun getWorkTypesFromPreferences(preferences: SharedPreferences): List<WorkType> {
         return (1..9)
-            .map { preferences.getString("work_type_slot_$it", null) }
-            .map { WorkType(it) }
+            .map { preferences.getString("work_type_slot_$it", "Unset") }
+            .map { preferenceValue: String -> WorkType(preferenceValue) }
     }
 
     class Factory(private val workHistoryStorage: WorkHistoryStorage,

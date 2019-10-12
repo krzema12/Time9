@@ -208,15 +208,54 @@ class WorkTrackingViewModelTest : StringSpec({
             WorkType("Some preference value for work_type_slot_8"),
             WorkType("Some preference value for work_type_slot_9"))
         verifyAll {
-            sharedPreferences.getString("work_type_slot_1", null)
-            sharedPreferences.getString("work_type_slot_2", null)
-            sharedPreferences.getString("work_type_slot_3", null)
-            sharedPreferences.getString("work_type_slot_4", null)
-            sharedPreferences.getString("work_type_slot_5", null)
-            sharedPreferences.getString("work_type_slot_6", null)
-            sharedPreferences.getString("work_type_slot_7", null)
-            sharedPreferences.getString("work_type_slot_8", null)
-            sharedPreferences.getString("work_type_slot_9", null)
+            sharedPreferences.getString("work_type_slot_1", "Unset")
+            sharedPreferences.getString("work_type_slot_2", "Unset")
+            sharedPreferences.getString("work_type_slot_3", "Unset")
+            sharedPreferences.getString("work_type_slot_4", "Unset")
+            sharedPreferences.getString("work_type_slot_5", "Unset")
+            sharedPreferences.getString("work_type_slot_6", "Unset")
+            sharedPreferences.getString("work_type_slot_7", "Unset")
+            sharedPreferences.getString("work_type_slot_8", "Unset")
+            sharedPreferences.getString("work_type_slot_9", "Unset")
+            sharedPreferences.registerOnSharedPreferenceChangeListener(any())
+        }
+    }
+
+    "loads work types from preferences if defaults are unset" {
+        // given
+        val workHistoryStorage = mockk<WorkHistoryStorage>()
+        val timeProvider = mockk<TimeProvider>()
+        val sharedPreferences = mockk<SharedPreferences>()
+        val workTrackingViewModel = WorkTrackingViewModel(workHistoryStorage, timeProvider)
+        cookArchitectureComponents()
+        val preferenceKeySlot = slot<String>()
+        every { sharedPreferences.getString(capture(preferenceKeySlot), any()) } answers { "Unset" }
+        every { sharedPreferences.registerOnSharedPreferenceChangeListener(any()) } just runs
+
+        // when
+        workTrackingViewModel.initializeWorkTypes(sharedPreferences)
+
+        // then
+        workTrackingViewModel.workTypes.value shouldBe listOf(
+            WorkType("Unset"),
+            WorkType("Unset"),
+            WorkType("Unset"),
+            WorkType("Unset"),
+            WorkType("Unset"),
+            WorkType("Unset"),
+            WorkType("Unset"),
+            WorkType("Unset"),
+            WorkType("Unset"))
+        verifyAll {
+            sharedPreferences.getString("work_type_slot_1", "Unset")
+            sharedPreferences.getString("work_type_slot_2", "Unset")
+            sharedPreferences.getString("work_type_slot_3", "Unset")
+            sharedPreferences.getString("work_type_slot_4", "Unset")
+            sharedPreferences.getString("work_type_slot_5", "Unset")
+            sharedPreferences.getString("work_type_slot_6", "Unset")
+            sharedPreferences.getString("work_type_slot_7", "Unset")
+            sharedPreferences.getString("work_type_slot_8", "Unset")
+            sharedPreferences.getString("work_type_slot_9", "Unset")
             sharedPreferences.registerOnSharedPreferenceChangeListener(any())
         }
     }
