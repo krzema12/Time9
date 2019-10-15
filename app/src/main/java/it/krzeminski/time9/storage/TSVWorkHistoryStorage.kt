@@ -2,13 +2,14 @@ package it.krzeminski.time9.storage
 
 import com.soywiz.klock.DateFormat
 import com.soywiz.klock.DateTimeTz
+import com.soywiz.klock.TimezoneOffset
 import it.krzeminski.time9.model.WorkItem
 import it.krzeminski.time9.model.WorkType
 import java.io.File
 import java.io.FileReader
 import java.io.FileWriter
 
-class TSVWorkHistoryStorage(val filePath: String) : WorkHistoryStorage() {
+class TSVWorkHistoryStorage(val filePath: String, val timezoneToRestore: TimezoneOffset) : WorkHistoryStorage() {
     override fun store(workHistory: List<WorkItem>) {
         with(FileWriter(filePath)) {
             appendln(listOf(
@@ -41,7 +42,7 @@ class TSVWorkHistoryStorage(val filePath: String) : WorkHistoryStorage() {
             val fields = line.split("\t")
             WorkItem(
                 type = WorkType(name = fields[0]),
-                startTime = fields[1].fromSpreadsheetFriendlyFormatToDateTimeTz())
+                startTime = fields[1].fromSpreadsheetFriendlyFormatToDateTimeTz(timezoneToRestore))
         }
     }
 }
@@ -52,6 +53,6 @@ private val dateTimeSpreadsheetFriendlyFormat =
 private fun DateTimeTz.toSpreadsheetFriendlyFormat() =
     this.format(dateTimeSpreadsheetFriendlyFormat)
 
-private fun String.fromSpreadsheetFriendlyFormatToDateTimeTz() =
-    dateTimeSpreadsheetFriendlyFormat.tryParse(this)
+private fun String.fromSpreadsheetFriendlyFormatToDateTimeTz(timezoneToRestore: TimezoneOffset) =
+    dateTimeSpreadsheetFriendlyFormat.tryParse(this)?.toOffsetUnadjusted(timezoneToRestore)
         ?: throw IllegalArgumentException("The time format $this couldn't be parsed!")

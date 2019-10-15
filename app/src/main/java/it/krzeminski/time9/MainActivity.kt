@@ -28,7 +28,9 @@ class MainActivity : AppCompatActivity() {
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false)
 
         workHistoryFile = filesDir.resolve("work_history.tsv")
-        val workHistoryStorage = TSVWorkHistoryStorage(filePath = workHistoryFile.toString())
+        val workHistoryStorage = TSVWorkHistoryStorage(
+            filePath = workHistoryFile.toString(),
+            timezoneToRestore = TimeProvider.now().localOffset)
         val workTrackingViewModelFactory = WorkTrackingViewModel.Factory(workHistoryStorage, TimeProvider)
 
         workTrackingViewModel = workTrackingViewModelFactory.create(
