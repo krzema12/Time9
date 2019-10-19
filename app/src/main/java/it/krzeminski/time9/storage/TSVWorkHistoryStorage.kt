@@ -9,6 +9,17 @@ import java.io.File
 import java.io.FileReader
 import java.io.FileWriter
 
+/**
+ * Handles storing and loading work history to/from a text file given in [filePath].
+ *
+ * Because the file currently stores the start times only in spreadsheet-friendly format, it doesn't contain any
+ * information about timezone. Because of this, when the times are stored, this piece of info is lost. When loading
+ * the history, the times are first read as UTC and then [timezoneToRestore] is used to set desired timezone.
+ * This may give incorrect behavior when the client works in multiple timezones.
+ *
+ * XXX [timezoneToRestore] is passed in the constructor, and not in [load] method because it's currently impossible
+ * to mock inline classes in mockk library.
+ */
 class TSVWorkHistoryStorage(val filePath: String, val timezoneToRestore: TimezoneOffset) : WorkHistoryStorage() {
     override fun store(workHistory: List<WorkItem>) {
         with(FileWriter(filePath)) {
