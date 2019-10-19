@@ -1,9 +1,7 @@
 package it.krzeminski.time9.viewmodel
 
 import android.content.SharedPreferences
-import com.soywiz.klock.DateTime
-import com.soywiz.klock.DateTimeTz
-import com.soywiz.klock.TimeProvider
+import com.soywiz.klock.*
 import io.kotlintest.shouldBe
 import io.kotlintest.specs.StringSpec
 import io.mockk.*
@@ -15,12 +13,14 @@ class WorkTrackingViewModelTest : StringSpec({
     "loads history and sets fields values when initializeHistory() is called" {
         // given
         val workHistoryStorage = mockk<WorkHistoryStorage>()
-        val timeProvider = mockk<TimeProvider>()
+        val timeProvider = spyk<TimeProvider>(object : TimeProvider {
+            override fun now() = DateTime.fromString("Sat, 08 Sep 2018 04:09:30 Z").local
+        })
         val workTrackingViewModel = WorkTrackingViewModel(workHistoryStorage, timeProvider)
         cookArchitectureComponents()
         every { workHistoryStorage.load() } returns listOf(
-            WorkItem(type = WorkType("first"), startTime = DateTimeTz.nowLocal()),
-            WorkItem(type = WorkType("second"), startTime = DateTimeTz.nowLocal()))
+            WorkItem(type = WorkType("first"), startTime = DateTime.fromString("Sat, 08 Sep 2018 04:08:00 Z")),
+            WorkItem(type = WorkType("second"), startTime = DateTime.fromString("Sat, 08 Sep 2018 04:09:00 Z")))
 
         // when
         workTrackingViewModel.initializeHistory()
@@ -28,6 +28,31 @@ class WorkTrackingViewModelTest : StringSpec({
         // then
         workTrackingViewModel.numberOfWorkHistoryEntries.value shouldBe 2
         workTrackingViewModel.currentWorkType.value shouldBe WorkType("second")
+        workTrackingViewModel.timeWorkedToday.value shouldBe 1.minutes + 30.seconds
+        verifyAll {
+            workHistoryStorage.load()
+        }
+    }
+
+    "loads history and sets fields values when initializeHistory() is called and last work type is Off Work" {
+        // given
+        val workHistoryStorage = mockk<WorkHistoryStorage>()
+        val timeProvider = spyk<TimeProvider>(object : TimeProvider {
+            override fun now() = DateTime.fromString("Sat, 08 Sep 2018 04:09:30 Z").local
+        })
+        val workTrackingViewModel = WorkTrackingViewModel(workHistoryStorage, timeProvider)
+        cookArchitectureComponents()
+        every { workHistoryStorage.load() } returns listOf(
+            WorkItem(type = WorkType("first"), startTime = DateTime.fromString("Sat, 08 Sep 2018 04:08:00 Z")),
+            WorkItem(type = WorkType("Off Work"), startTime = DateTime.fromString("Sat, 08 Sep 2018 04:09:00 Z")))
+
+        // when
+        workTrackingViewModel.initializeHistory()
+
+        // then
+        workTrackingViewModel.numberOfWorkHistoryEntries.value shouldBe 2
+        workTrackingViewModel.currentWorkType.value shouldBe WorkType("Off Work")
+        workTrackingViewModel.timeWorkedToday.value shouldBe 1.minutes
         verifyAll {
             workHistoryStorage.load()
         }
@@ -54,7 +79,9 @@ class WorkTrackingViewModelTest : StringSpec({
     "empty history" {
         // given
         val workHistoryStorage = mockk<WorkHistoryStorage>()
-        val timeProvider = mockk<TimeProvider>()
+        val timeProvider = spyk<TimeProvider>(object : TimeProvider {
+            override fun now() = DateTime.fromString("Sat, 08 Sep 2018 04:09:30 Z").local
+        })
         val workTrackingViewModel = WorkTrackingViewModel(workHistoryStorage, timeProvider)
         cookArchitectureComponents()
         every { workHistoryStorage.load() } returns emptyList()
@@ -65,6 +92,7 @@ class WorkTrackingViewModelTest : StringSpec({
         // then
         workTrackingViewModel.numberOfWorkHistoryEntries.value shouldBe 0
         workTrackingViewModel.currentWorkType.value shouldBe WorkType("Off Work")
+        workTrackingViewModel.timeWorkedToday.value shouldBe TimeSpan.ZERO
         verifyAll {
             workHistoryStorage.load()
         }
@@ -179,6 +207,53 @@ class WorkTrackingViewModelTest : StringSpec({
                 WorkItem(type = WorkType("Off Work"), startTime = DateTime.fromUnix(123).local)))
             timeProvider.now()
         }
+    }
+
+    "recalculateTimes when time flows within the same day" {
+        val workHistoryStorage = mockk<WorkHistoryStorage>()
+        class MockableTimeProvider(var timeToReturn: DateTime) : TimeProvider {
+            override fun now() = timeToReturn
+        }
+        val timeProvider = MockableTimeProvider(timeToReturn = DateTime.fromString("Sat, 08 Sep 2018 04:09:30 Z").local)
+        val workTrackingViewModel = WorkTrackingViewModel(workHistoryStorage, timeProvider)
+        cookArchitectureComponents()
+        every { workHistoryStorage.load() } returns listOf(
+            WorkItem(type = WorkType("second"), startTime = DateTime.fromString("Sat, 08 Sep 2018 04:09:00 Z")))
+        workTrackingViewModel.initializeHistory()
+        workTrackingViewModel.timeWorkedToday.value shouldBe 30.seconds
+
+        // When
+        timeProvider.timeToReturn = DateTime.fromString("Sat, 08 Sep 2018 04:11:30 Z").local
+        workTrackingViewModel.recalculateTimes()
+
+        // Then
+        workTrackingViewModel.timeWorkedToday.value shouldBe 2.minutes + 30.seconds
+    }
+
+    "recalculateTimes when time flows and a new day comes" {
+        val workHistoryStorage = mockk<WorkHistoryStorage>()
+        class MockableTimeProvider(var timeToReturn: DateTime) : TimeProvider {
+            override fun now() = timeToReturn
+        }
+        val timeProvider = MockableTimeProvider(timeToReturn = DateTime.fromString("Sat, 08 Sep 2018 23:55:00 Z").local)
+        val workTrackingViewModel = WorkTrackingViewModel(workHistoryStorage, timeProvider)
+        cookArchitectureComponents()
+        every { workHistoryStorage.load() } returns listOf(
+            WorkItem(type = WorkType("second"), startTime = DateTime.fromString("Sat, 08 Sep 2018 23:30:00 Z")),
+            WorkItem(type = WorkType("second"), startTime = DateTime.fromString("Sat, 09 Sep 2018 00:05:00 Z")),
+            WorkItem(type = WorkType("second"), startTime = DateTime.fromString("Sat, 09 Sep 2018 00:10:00 Z")))
+        workTrackingViewModel.initializeHistory()
+        workTrackingViewModel.timeWorkedToday.value shouldBe 25.minutes
+
+        // When
+        timeProvider.timeToReturn = DateTime.fromString("Sat, 09 Sep 2018 00:15:00 Z").local
+        workTrackingViewModel.recalculateTimes()
+
+        // Then
+        // When a new day comes, the work item that started previous day and continues the current day is not divided
+        // into two to count the current day's part - it's just not counted. It's a conscious simplificatin for now and
+        // should affect only people working at nights. Fixing it is in scope of #22.
+        workTrackingViewModel.timeWorkedToday.value shouldBe 10.minutes
     }
 
     "loads work types from preferences" {

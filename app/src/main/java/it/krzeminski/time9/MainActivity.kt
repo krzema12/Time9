@@ -13,12 +13,15 @@ import it.krzeminski.time9.preferences.MyPreferenceActivity
 import android.preference.PreferenceManager
 import androidx.lifecycle.Observer
 import com.soywiz.klock.TimeProvider
+import com.soywiz.klock.toTimeString
+import it.krzeminski.time9.utils.PeriodicViewRefresher
 import it.krzeminski.time9.viewmodel.WorkTrackingViewModel
 import java.io.File
 
 class MainActivity : AppCompatActivity() {
     private lateinit var workTrackingViewModel: WorkTrackingViewModel
     private lateinit var workHistoryFile: File
+    private lateinit var periodicViewRefresher: PeriodicViewRefresher
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,6 +38,10 @@ class MainActivity : AppCompatActivity() {
         workTrackingViewModel = workTrackingViewModelFactory.create(
             WorkTrackingViewModel::class.java)
 
+        periodicViewRefresher = PeriodicViewRefresher {
+            workTrackingViewModel.recalculateTimes()
+        }
+
         val thisActivity = this
         with(workTrackingViewModel) {
             currentWorkType.observe(thisActivity, Observer { workType ->
@@ -46,10 +53,23 @@ class MainActivity : AppCompatActivity() {
             workTypes.observe(thisActivity, Observer { workTypes ->
                 configureButtons(workTypes, this)
             })
+            timeWorkedToday.observe(thisActivity, Observer { timeWorkedToday ->
+                time_worked_today.text = timeWorkedToday.toTimeString(components = 3)
+            })
         }
 
         workTrackingViewModel.initializeHistory()
         workTrackingViewModel.initializeWorkTypes(PreferenceManager.getDefaultSharedPreferences(this))
+    }
+
+    override fun onResume() {
+        super.onResume()
+        periodicViewRefresher.start(1000)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        periodicViewRefresher.stop()
     }
 
     private fun configureButtons(workTypes: List<WorkType>, workTrackingViewModel: WorkTrackingViewModel) {

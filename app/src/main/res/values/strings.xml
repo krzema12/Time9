@@ -5,4 +5,6 @@
     <string name="current_work_type">Current work type:</string>
     <string name="export_work_history">Export work history</string>
     <string name="preferences">Preferences</string>
+    <string name="time_worked_today">Time worked today:</string>
+    <string name="no_value">-</string>
 </resources>

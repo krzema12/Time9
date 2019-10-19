@@ -42,6 +42,32 @@ class InstrumentedTest {
     }
 
     @Test
+    fun updatesTimeWorkedToday() {
+        // Preconditions
+        onView(withId(R.id.time_worked_today))
+            .check(matches(withText("00:00:00")))
+
+        // Test flow
+        onView(withId(R.id.button_change_work_type_1)).perform(click())
+        Thread.sleep(5000)
+        onView(withId(R.id.time_worked_today))
+            // Allowing 1-second tolerance.
+            .check(matches(anyOf(withText("00:00:04"), withText("00:00:05"), withText("00:00:06"))))
+
+        onView(withId(R.id.button_off_work)).perform(click())
+        Thread.sleep(10000)
+        onView(withId(R.id.time_worked_today))
+            // Allowing 1-second tolerance.
+            .check(matches(anyOf(withText("00:00:04"), withText("00:00:05"), withText("00:00:06"))))
+
+        onView(withId(R.id.button_change_work_type_2)).perform(click())
+        Thread.sleep(15000)
+        onView(withId(R.id.time_worked_today))
+            // Allowing 1-second tolerance.
+            .check(matches(anyOf(withText("00:00:19"), withText("00:00:20"), withText("00:00:21"))))
+    }
+
+    @Test
     fun changesWorkTypePreferenceAndAddsNewWorkItemWithNewWorkType() {
         // When
         onView(withId(R.id.action_preferences)).perform(click())

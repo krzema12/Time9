@@ -4,7 +4,11 @@ import android.content.SharedPreferences
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.soywiz.klock.DateTime.Companion.now
 import com.soywiz.klock.TimeProvider
+import com.soywiz.klock.TimeSpan
+import it.krzeminski.time9.logic.calculateWorkDuration
+import it.krzeminski.time9.logic.lastIncludingDay
 import it.krzeminski.time9.model.WorkItem
 import it.krzeminski.time9.model.WorkType
 import it.krzeminski.time9.storage.WorkHistoryStorage
@@ -14,6 +18,7 @@ class WorkTrackingViewModel(private val workHistoryStorage: WorkHistoryStorage,
     val workTypes = MutableLiveData<List<WorkType>>()
     val currentWorkType = MutableLiveData<WorkType>()
     val numberOfWorkHistoryEntries = MutableLiveData<Int>()
+    val timeWorkedToday = MutableLiveData<TimeSpan>()
     private val workHistory = MutableLiveData<List<WorkItem>>()
     private val offWorkType = WorkType("Off Work")
     // It's needed to hold a reference to this object because in SharedPreferences' implementation,
@@ -25,6 +30,7 @@ class WorkTrackingViewModel(private val workHistoryStorage: WorkHistoryStorage,
         workHistory.value = workHistoryStorage.load()
         currentWorkType.value = workHistory.value?.lastOrNull()?.type ?: offWorkType
         numberOfWorkHistoryEntries.value = workHistory.value?.size
+        recalculateTimes()
     }
 
     fun initializeWorkTypes(sharedPreferences: SharedPreferences) {
@@ -49,10 +55,17 @@ class WorkTrackingViewModel(private val workHistoryStorage: WorkHistoryStorage,
         currentWorkType.value = newWorkType
 
         workHistoryStorage.store(workHistory.value!!)
+        recalculateTimes()
     }
 
     fun changeToOffWork() {
         changeCurrentWorkType(offWorkType)
+    }
+
+    fun recalculateTimes() {
+        timeWorkedToday.value = (workHistory.value ?: emptyList())
+            .lastIncludingDay(timeProvider.now().date)
+            .calculateWorkDuration(timeProvider.now().local)
     }
 
     private fun getWorkTypesFromPreferences(preferences: SharedPreferences): List<WorkType> {
