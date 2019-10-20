@@ -18,13 +18,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textAlignment="center"
+            android:textSize="10sp"
             android:text="@string/history_not_loaded"/>
 
         <TextView
             android:id="@+id/current_work_type_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
             android:textAlignment="center"
             android:text="@string/current_work_type"/>
         <TextView
