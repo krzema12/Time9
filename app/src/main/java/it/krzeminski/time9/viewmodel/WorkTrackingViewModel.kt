@@ -17,6 +17,7 @@ class WorkTrackingViewModel(private val workHistoryStorage: WorkHistoryStorage,
                             private val timeProvider: TimeProvider) : ViewModel() {
     val workTypes = MutableLiveData<List<WorkType>>()
     val currentWorkType = MutableLiveData<WorkType>()
+    val currentWorkTypeTime = MutableLiveData<TimeSpan>()
     val numberOfWorkHistoryEntries = MutableLiveData<Int>()
     val timeWorkedToday = MutableLiveData<TimeSpan>()
     private val workHistory = MutableLiveData<List<WorkItem>>()
@@ -66,6 +67,9 @@ class WorkTrackingViewModel(private val workHistoryStorage: WorkHistoryStorage,
         timeWorkedToday.value = (workHistory.value ?: emptyList())
             .lastIncludingDay(timeProvider.now().date)
             .calculateWorkDuration(timeProvider.now().local)
+        currentWorkTypeTime.value = workHistory.value?.lastOrNull()?.startTime?.let {
+            timeProvider.now().local - it
+        } ?: TimeSpan.ZERO
     }
 
     private fun getWorkTypesFromPreferences(preferences: SharedPreferences): List<WorkType> {

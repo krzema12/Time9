@@ -42,7 +42,9 @@ class InstrumentedTest {
     }
 
     @Test
-    fun updatesTimeWorkedToday() {
+    fun updatesTimeWorkedTodayAndCurrentWorkItemTime() {
+        // Allowing 1-second tolerance everywhere where elapsed time is checked.
+
         // Preconditions
         onView(withId(R.id.time_worked_today))
             .check(matches(withText("00:00:00")))
@@ -51,20 +53,23 @@ class InstrumentedTest {
         onView(withId(R.id.button_change_work_type_1)).perform(click())
         Thread.sleep(5000)
         onView(withId(R.id.time_worked_today))
-            // Allowing 1-second tolerance.
+            .check(matches(anyOf(withText("00:00:04"), withText("00:00:05"), withText("00:00:06"))))
+        onView(withId(R.id.current_work_type_time))
             .check(matches(anyOf(withText("00:00:04"), withText("00:00:05"), withText("00:00:06"))))
 
         onView(withId(R.id.button_off_work)).perform(click())
         Thread.sleep(10000)
         onView(withId(R.id.time_worked_today))
-            // Allowing 1-second tolerance.
             .check(matches(anyOf(withText("00:00:04"), withText("00:00:05"), withText("00:00:06"))))
+        onView(withId(R.id.current_work_type_time))
+            .check(matches(anyOf(withText("00:00:09"), withText("00:00:10"), withText("00:00:11"))))
 
         onView(withId(R.id.button_change_work_type_2)).perform(click())
         Thread.sleep(15000)
         onView(withId(R.id.time_worked_today))
-            // Allowing 1-second tolerance.
             .check(matches(anyOf(withText("00:00:19"), withText("00:00:20"), withText("00:00:21"))))
+        onView(withId(R.id.current_work_type_time))
+            .check(matches(anyOf(withText("00:00:14"), withText("00:00:15"), withText("00:00:16"))))
     }
 
     @Test

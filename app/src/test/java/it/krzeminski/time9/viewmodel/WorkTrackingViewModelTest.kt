@@ -28,6 +28,7 @@ class WorkTrackingViewModelTest : StringSpec({
         // then
         workTrackingViewModel.numberOfWorkHistoryEntries.value shouldBe 2
         workTrackingViewModel.currentWorkType.value shouldBe WorkType("second")
+        workTrackingViewModel.currentWorkTypeTime.value shouldBe 30.seconds
         workTrackingViewModel.timeWorkedToday.value shouldBe 1.minutes + 30.seconds
         verifyAll {
             workHistoryStorage.load()
@@ -52,6 +53,7 @@ class WorkTrackingViewModelTest : StringSpec({
         // then
         workTrackingViewModel.numberOfWorkHistoryEntries.value shouldBe 2
         workTrackingViewModel.currentWorkType.value shouldBe WorkType("Off Work")
+        workTrackingViewModel.currentWorkTypeTime.value shouldBe 30.seconds
         workTrackingViewModel.timeWorkedToday.value shouldBe 1.minutes
         verifyAll {
             workHistoryStorage.load()
@@ -92,6 +94,7 @@ class WorkTrackingViewModelTest : StringSpec({
         // then
         workTrackingViewModel.numberOfWorkHistoryEntries.value shouldBe 0
         workTrackingViewModel.currentWorkType.value shouldBe WorkType("Off Work")
+        workTrackingViewModel.currentWorkTypeTime.value shouldBe TimeSpan.ZERO
         workTrackingViewModel.timeWorkedToday.value shouldBe TimeSpan.ZERO
         verifyAll {
             workHistoryStorage.load()
@@ -221,6 +224,7 @@ class WorkTrackingViewModelTest : StringSpec({
             WorkItem(type = WorkType("second"), startTime = DateTime.fromString("Sat, 08 Sep 2018 04:09:00 Z")))
         workTrackingViewModel.initializeHistory()
         workTrackingViewModel.timeWorkedToday.value shouldBe 30.seconds
+        workTrackingViewModel.currentWorkTypeTime.value shouldBe 30.seconds
 
         // When
         timeProvider.timeToReturn = DateTime.fromString("Sat, 08 Sep 2018 04:11:30 Z").local
@@ -228,6 +232,7 @@ class WorkTrackingViewModelTest : StringSpec({
 
         // Then
         workTrackingViewModel.timeWorkedToday.value shouldBe 2.minutes + 30.seconds
+        workTrackingViewModel.currentWorkTypeTime.value shouldBe 2.minutes + 30.seconds
     }
 
     "recalculateTimes when time flows and a new day comes" {

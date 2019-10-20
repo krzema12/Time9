@@ -47,6 +47,9 @@ class MainActivity : AppCompatActivity() {
             currentWorkType.observe(thisActivity, Observer { workType ->
                 current_work_type.text = workType.name
             })
+            currentWorkTypeTime.observe(thisActivity, Observer { workTypeTime ->
+                current_work_type_time.text = workTypeTime.toTimeString(components = 3)
+            })
             numberOfWorkHistoryEntries.observe(thisActivity, Observer { numberOfEntries ->
                 number_of_history_entries.text = "Number of history entries: $numberOfEntries"
             })
