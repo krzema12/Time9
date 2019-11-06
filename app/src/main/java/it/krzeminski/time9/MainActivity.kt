@@ -12,9 +12,11 @@ import it.krzeminski.time9.model.WorkType
 import it.krzeminski.time9.preferences.MyPreferenceActivity
 import android.preference.PreferenceManager
 import androidx.lifecycle.Observer
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.soywiz.klock.TimeProvider
 import com.soywiz.klock.toTimeString
 import it.krzeminski.time9.utils.PeriodicViewRefresher
+import it.krzeminski.time9.viewmodel.WorkItemAdapter
 import it.krzeminski.time9.viewmodel.WorkTrackingViewModel
 import java.io.File
 
@@ -42,8 +44,16 @@ class MainActivity : AppCompatActivity() {
             workTrackingViewModel.recalculateTimes()
         }
 
+        val workItemAdapter = WorkItemAdapter(emptyList())
+        work_history.adapter = workItemAdapter
+        val layoutManager = LinearLayoutManager(this)
+        work_history.layoutManager = layoutManager
+
         val thisActivity = this
         with(workTrackingViewModel) {
+            workHistory.observe(thisActivity, Observer { workHistory ->
+                workItemAdapter.setWorkHistory(workHistory)
+            })
             currentWorkType.observe(thisActivity, Observer { workType ->
                 current_work_type.text = workType.name
             })

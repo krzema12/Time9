@@ -4,7 +4,6 @@ import android.content.SharedPreferences
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.soywiz.klock.DateTime.Companion.now
 import com.soywiz.klock.TimeProvider
 import com.soywiz.klock.TimeSpan
 import it.krzeminski.time9.logic.calculateWorkDuration
@@ -20,7 +19,7 @@ class WorkTrackingViewModel(private val workHistoryStorage: WorkHistoryStorage,
     val currentWorkTypeTime = MutableLiveData<TimeSpan>()
     val numberOfWorkHistoryEntries = MutableLiveData<Int>()
     val timeWorkedToday = MutableLiveData<TimeSpan>()
-    private val workHistory = MutableLiveData<List<WorkItem>>()
+    val workHistory = MutableLiveData<List<WorkItem>>()
     private val offWorkType = WorkType("Off Work")
     // It's needed to hold a reference to this object because in SharedPreferences' implementation,
     // it's held in a WeakHashMap. If this object didn't have a strong reference (below), it would

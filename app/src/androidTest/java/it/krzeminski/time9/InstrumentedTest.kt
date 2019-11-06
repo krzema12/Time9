@@ -106,4 +106,29 @@ class InstrumentedTest {
         val entry = workHistoryLines[1].split('\t')
         assertThat(entry[0], `is`("New work type"))
     }
+
+
+    @Test
+    fun updatesWorkHistoryListViewWhenWorkTypeIsChanged() {
+        // When
+        onView(withId(R.id.button_change_work_type_1)).perform(click())
+
+        // Then
+        val workHistoryFilePath = activityRule.activity.filesDir.resolve("work_history.tsv")
+        val workHistoryLines = Files.readAllLines(workHistoryFilePath.toPath(), Charsets.UTF_8)
+        assertThat(workHistoryLines.size, `is`(2))
+        val entry = workHistoryLines[1].split("\t")
+
+        onView(withId(R.id.work_history))
+            .check(matches(allOf(hasDescendant(withText("Please")), hasDescendant(withText(entry[1])))))
+        onView(withId(R.id.work_history))
+            .check(matches(hasChildCount(1)))
+
+        // When
+        onView(withId(R.id.button_change_work_type_2)).perform(click())
+
+        // Then
+        onView(withId(R.id.work_history))
+            .check(matches(hasChildCount(2)))
+    }
 }
